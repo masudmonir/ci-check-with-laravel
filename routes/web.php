@@ -17,17 +17,17 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/home', function () {
-    return "this is home page";
+    return 'this is home page';
 });
 Route::get('/services', function () {
-    return "this is services page";
+    return 'this is services page';
 });
 Route::get('/products', function () {
-    return "this is products page";
+    return 'this is products page';
 });
 Route::get('/blog', function () {
-    return "this is blog page";
+    return 'this is blog page';
 });
 Route::get('/about', function () {
-                            return "this is about page";
+    return 'this is about page';
 });
