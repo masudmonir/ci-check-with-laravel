@@ -29,5 +29,5 @@ Route::get('/blog', function () {
     return 'this is blog page';
 });
 Route::get('/about', function () {
-    return 'this is about page';
+                return 'this is about page';
 });
