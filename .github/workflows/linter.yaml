@@ -1,12 +1,13 @@
 name: Laravel Linter
 
+
 on:
   push:
     branches:
       - main
-  # pull_request:
-  #   branches:
-  #     - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   laravel-linter:
@@ -15,6 +16,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 2  # আগের কমিট তুলনা করার জন্য
 
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
@@ -24,5 +27,43 @@ jobs:
     - name: Install dependencies
       run: composer install --no-progress --prefer-dist
 
-    - name: Run Laravel Pint (Code Style Fixer)
-      run: ./vendor/bin/pint --test
+    - name: Get list of changed PHP files
+      id: changed_files
+      run: |
+        git diff --name-only HEAD^ HEAD | grep '\.php$' > changed_files.txt
+        cat changed_files.txt
+
+    - name: Run Laravel Pint only on changed files
+      run: |
+        if [ -s changed_files.txt ]; then
+          xargs ./vendor/bin/pint --test < changed_files.txt
+        else
+          echo "No PHP files changed."
+        fi
+
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
+
+# jobs:
+#   laravel-linter:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v3
+
+#     - name: Set up PHP
+#       uses: shivammathur/setup-php@v2
+#       with:
+#         php-version: 8.2
+
+#     - name: Install dependencies
+#       run: composer install --no-progress --prefer-dist
+
+#     - name: Run Laravel Pint (Code Style Fixer)
+#       run: ./vendor/bin/pint --test
