@@ -1,0 +1,14 @@
+includes:
+    - ./vendor/nunomaduro/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+        - routes
+        - tests
+    level: 5
+
+    ignoreErrors:
+        # উদাহরণস্বরূপ, কিছু false positive থাকলে এখানে regex দিয়ে ignore করতে পারবেন
+        # - '#Undefined variable: \$this#'
+
