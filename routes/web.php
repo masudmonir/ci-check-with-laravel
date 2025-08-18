@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
         return view('welcome');
     });
     Route::get('/home', function () {
-        return 'this is home page';
+        return 'this is home page from web.php';
     });
     Route::get('/services', function () {
         return 'this is services page';
