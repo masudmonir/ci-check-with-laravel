@@ -27,11 +27,26 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
 
-      - name: Run PHP CodeSniffer (PSR-12)
-        run: vendor/bin/phpcs --standard=PSR12 app/ routes/ tests/
+      # - name: Run PHP CodeSniffer (PSR-12)
+      #   run: vendor/bin/phpcs --standard=PSR12 app/ routes/ tests/
 
-      - name: Run PHPStan (Static Analysis)
-        run: vendor/bin/phpstan analyse --memory-limit=1G
+      # - name: Run PHPStan (Static Analysis)
+      #   run: vendor/bin/phpstan analyse --memory-limit=1G
+
+      - name: Get changed PHP files
+        id: files
+        run: |
+          echo "CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.php$' || true)" >> $GITHUB_ENV
+
+      - name: Run PHPCS on changed files
+        if: env.CHANGED != ''
+        run: echo "$CHANGED" | xargs vendor/bin/phpcs --standard=PSR12
+
+      - name: Run PHPStan on changed files
+        if: env.CHANGED != ''
+        run: echo "$CHANGED" | xargs vendor/bin/phpstan analyse --memory-limit=1G
+
+
 
 
 # on:

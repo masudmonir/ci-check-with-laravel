@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
         return 'this is home page from web.php';
     });
     Route::get('/services', function () {
-        return 'this is services page';
+        return 'this is services page from web.php';
     });
     Route::get('/products', function () {
         return 'this is products page';
