@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  laravel:
+    image: php:8.3-apache
+    container_name: laravel_ci
+    restart: always
+
+    build:
+      context: /var/www/php-83/ci-check-with-laravel
+    volumes:
+      - /var/www/php-83/ci-check-with-laravel:/var/www/html
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql
+    environment:
+      - APP_ENV=local
+      - DB_HOST=mysql
+      - DB_DATABASE=lara_ci_cd_db
+      - DB_USERNAME=root
+      - DB_PASSWORD=password
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_ci
+    restart: always
+    environment:
+      MYSQL_DATABASE: lara_ci_cd_db
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3309:3306"
+
+volumes:
+  mysql_data:
