@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<ruleset name="Laravel Custom Standard">
+    <description>Custom PHPCS rules for Laravel project</description>
+
+    <file>app</file>
+    <file>routes</file>
+    <file>tests</file>
+
+    <!-- Base standard PSR-12 -->
+    <rule ref="PSR12"/>
+
+    <!-- Ignore long line warnings -->
+    <rule ref="Generic.Files.LineLength">
+        <severity>0</severity>
+    </rule>
+
+    <!-- Ignore camelCase method names in test files -->
+    <rule ref="Squiz.NamingConventions.ValidFunctionName.NotCamelCaps">
+        <severity>0</severity>
+    </rule>
+
+    <!-- Skip tests folder completely -->
+    <exclude-pattern>tests/*</exclude-pattern>
+</ruleset>
