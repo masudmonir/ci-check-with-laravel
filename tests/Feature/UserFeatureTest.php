@@ -7,22 +7,26 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 
+// use Illuminate\Foundation\Testing\DatabaseTransactions;
+
 class UserFeatureTest extends TestCase
 {
     use RefreshDatabase; // প্রতিবার টেস্টের সময় ডাটাবেস রিফ্রেশ হবে
     use WithFaker; // ফেক ডেটা জেনারেট করার জন্য
 
+    // use DatabaseTransactions; // প্রতিটি টেস্টের পর ডাটাবেস ট্রানজেকশন রোলব্যাক হবে
+
     public function testUserListApiReturnsData()
     {
         // Arrange: কিছু ইউজার তৈরি করি
-        User::factory()->count(3)->create();
+        User::factory()->count(2)->create();
 
         // Act: /api/users এ GET রিকোয়েস্ট পাঠাই
         $response = $this->getJson('/api/users');
 
         // Assert: রেসপন্স ঠিক আছে কিনা যাচাই
         $response->assertStatus(200)
-                 ->assertJsonCount(3); // ৩ জন ইউজার আসছে কিনা
+                 ->assertJsonCount(2); // ৩ জন ইউজার আসছে কিনা
     }
 
     public function testUserCanBeCreated()
@@ -47,4 +51,19 @@ class UserFeatureTest extends TestCase
             'email' => 'masud@example.com'
         ]);
     }
+
+    // public function test_user_creation()
+    // {
+    //     $userData = [
+    //         'name' => $this->faker->name,
+    //         'email' => $this->faker->unique()->safeEmail,
+    //         'password' => bcrypt('secret123'),
+    //     ];
+
+    //     $user = User::create($userData);
+
+    //     $this->assertDatabaseHas('users', [
+    //         'email' => $userData['email']
+    //     ]);
+    // }
 }
