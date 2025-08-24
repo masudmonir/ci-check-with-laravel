@@ -1,0 +1,57 @@
+name: Laravel Tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: lara_ci_cd_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # PHP সেটআপ
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, bcmath, pdo_mysql
+          coverage: none
+
+      # Composer ডিপেন্ডেন্সি ইনস্টল
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      # Environment সেট করা
+      - name: Copy .env
+        run: cp .env.testing .env
+
+      - name: Generate key
+        run: php artisan key:generate
+
+      # DB কনফিগার (টেস্ট DB এর জন্য)
+      - name: Set DB Config
+        run: |
+          php artisan config:clear
+          php artisan migrate --env=testing --force
+
+      # PHPUnit টেস্ট চালানো
+      - name: Run Tests
+        run: php artisan test
