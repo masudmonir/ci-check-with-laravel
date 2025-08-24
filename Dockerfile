@@ -9,14 +9,17 @@ RUN apt-get update && apt-get install -y \
     git curl zip unzip libonig-dev libzip-dev libxml2-dev \
     && docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+
+# Set working directory
+WORKDIR /var/www/html
 
 # Copy app source code
 COPY . /
 
-# Set working directory
-WORKDIR /var/www/html
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN composer install --prefer-dist --no-interaction --no-progress
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
