@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /var/www/html
 
 # Copy app source code
-COPY . /var/www/html
+COPY . /
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
