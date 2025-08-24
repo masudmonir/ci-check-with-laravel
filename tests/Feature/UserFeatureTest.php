@@ -9,10 +9,14 @@ use App\Models\User;
 
 // use Illuminate\Foundation\Testing\DatabaseTransactions;
 
+// use Illuminate\Foundation\Testing\DatabaseTransactions;
+
 class UserFeatureTest extends TestCase
 {
     use RefreshDatabase; // প্রতিবার টেস্টের সময় ডাটাবেস রিফ্রেশ হবে
     use WithFaker; // ফেক ডেটা জেনারেট করার জন্য
+
+    // use DatabaseTransactions; // প্রতিটি টেস্টের পর ডাটাবেস ট্রানজেকশন রোলব্যাক হবে
 
     // use DatabaseTransactions; // প্রতিটি টেস্টের পর ডাটাবেস ট্রানজেকশন রোলব্যাক হবে
 
