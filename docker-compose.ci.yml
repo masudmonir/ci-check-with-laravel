@@ -4,31 +4,21 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: laravel_ci
-    restart: always
-    volumes:
-      - .:/var/www/html
-    ports:
-      - "8081:80"
+    tty: true              # keep container alive
+    command: tail -f /dev/null
     depends_on:
       - mysql
     environment:
-      - APP_ENV=testing
-      - DB_HOST=mysql
-      - DB_DATABASE=lara_ci_cd_db
-      - DB_USERNAME=root
-      - DB_PASSWORD=password
+      APP_ENV: testing
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_DATABASE: lara_ci_cd_db
+      DB_USERNAME: root
+      DB_PASSWORD: password
 
   mysql:
     image: mysql:8.0
     container_name: mysql_ci
-    restart: always
     environment:
       MYSQL_DATABASE: lara_ci_cd_db
       MYSQL_ROOT_PASSWORD: password
-    ports:
-      - "3309:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-
-volumes:
-  mysql_data:
