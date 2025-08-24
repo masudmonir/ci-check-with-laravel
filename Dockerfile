@@ -7,7 +7,12 @@ RUN a2enmod rewrite
 # Install dependencies
 RUN apt-get update && apt-get install -y \
     git curl zip unzip libonig-dev libzip-dev libxml2-dev \
-    && docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl
+    libpng-dev libjpeg-dev libfreetype6-dev \
+    libcurl4-openssl-dev pkg-config \
+    && docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl bcmath gd opcache
+
+# Enable curl & json extensions (if not default)
+RUN docker-php-ext-enable curl json
 
 
 
