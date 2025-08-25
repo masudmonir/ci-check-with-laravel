@@ -14,19 +14,22 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # Build and run containers with docker compose
-      - name: Build and run containers
+      - name: Build and start containers
         run: docker compose -f docker-compose.ci.yml up -d --build
 
-      # Wait for MySQL
       - name: Wait for MySQL
         run: |
           until docker compose -f docker-compose.ci.yml exec mysql mysqladmin ping -h "localhost" --silent; do
             sleep 2
           done
 
-      # Run Laravel tests
-      - name: Run PHPUnit
+      - name: Generate app key
+        run: docker compose -f docker-compose.ci.yml exec laravel php artisan key:generate
+
+      - name: Run migrations
+        run: docker compose -f docker-compose.ci.yml exec laravel php artisan migrate --force
+
+      - name: Run tests
         run: docker compose -f docker-compose.ci.yml exec laravel php artisan test
 
       # Cleanup

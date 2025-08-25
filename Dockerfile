@@ -11,15 +11,12 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /var/www/html
 
 # Copy app source code
-# Set working directory
-WORKDIR /var/www/html
+COPY . /
 
-# Copy Laravel project files into container
-COPY . .
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN composer install --prefer-dist --no-interaction --no-progress
 
-# Install PHP dependencies
-RUN composer install --prefer-dist --no-interaction --no-progress --no-scripts \
-    && php artisan key:generate --ansi
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
