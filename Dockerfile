@@ -15,7 +15,6 @@ COPY . /
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-RUN composer install --prefer-dist --no-interaction --no-progress
 
 
 # Set permissions
