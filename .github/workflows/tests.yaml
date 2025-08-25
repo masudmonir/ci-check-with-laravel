@@ -25,7 +25,7 @@ jobs:
           --health-retries=3
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # PHP সেটআপ
       - name: Setup PHP
@@ -33,7 +33,7 @@ jobs:
         with:
           php-version: '8.3'
           extensions: mbstring, xml, bcmath, pdo_mysql
-          coverage: none
+          coverage: xdebug
 
       # Composer ডিপেন্ডেন্সি ইনস্টল
       - name: Install dependencies
@@ -47,7 +47,7 @@ jobs:
         run: php artisan key:generate
 
       # DB কনফিগার (টেস্ট DB এর জন্য)
-      - name: Set DB Config
+      - name: Run migrations
         run: |
           php artisan config:clear
           php artisan migrate --env=testing --force
@@ -55,3 +55,25 @@ jobs:
       # PHPUnit টেস্ট চালানো
       - name: Run Tests
         run: php artisan test
+
+      # PHPUnit টেস্ট + Coverage (XML + HTML + Text summary)
+      - name: Run Tests with Coverage
+        run: |
+          XDEBUG_MODE=coverage php artisan test \
+            --coverage-clover=coverage.xml \
+            --coverage-html=coverage-report \
+            --coverage-text
+
+      # Upload coverage.xml
+      - name: Upload coverage.xml
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+
+      # Upload HTML Coverage Report
+      - name: Upload HTML Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: coverage-report
