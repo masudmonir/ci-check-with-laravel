@@ -35,5 +35,17 @@ jobs:
       - name: Run tests
         run: docker compose -f docker-compose.ci.yml exec laravel php artisan test
 
+      - name: Run tests with coverage
+        run: docker compose -f docker-compose.ci.yml exec laravel php artisan test --coverage-clover=coverage.xml
+
+      - name: Copy coverage.xml from container
+        run: docker cp laravel_ci:/var/www/html/coverage.xml ./coverage.xml
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage.xml
+
       - name: Stop containers
         run: docker compose -f docker-compose.ci.yml down -v

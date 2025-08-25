@@ -5,6 +5,8 @@
 /public/storage
 /storage/*.key
 /vendor
+/coverage-report
+/tests_old
 .env
 .env.backup
 .env.production

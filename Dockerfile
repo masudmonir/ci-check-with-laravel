@@ -7,6 +7,9 @@ RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev pkg-config \
     && docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl bcmath gd opcache
 
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug
+
 # Set working directory
 WORKDIR /var/www/html
 
