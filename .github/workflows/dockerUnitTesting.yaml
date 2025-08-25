@@ -36,7 +36,7 @@ jobs:
         run: docker compose -f docker-compose.ci.yml exec laravel php artisan test
 
       - name: Run tests with coverage
-        run: docker compose -f docker-compose.ci.yml exec laravel php artisan test --coverage-clover=coverage.xml
+        run: docker compose -f docker-compose.ci.yml exec -e XDEBUG_MODE=coverage laravel php artisan test --coverage-clover=coverage.xml
 
       - name: Copy coverage.xml from container
         run: docker cp laravel_ci:/var/www/html/coverage.xml ./coverage.xml
