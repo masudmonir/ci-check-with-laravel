@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Faker\Factory as Faker;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,27 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+    Route::get('/fake-users', function () {
+        $faker = Faker::create();
+
+        $users = [];
+
+        for ($i = 0; $i < 10; $i++) {
+            $users[] = [
+                'id' => $i + 1,
+                'name' => $faker->name,
+                'email' => $faker->unique()->safeEmail,
+                'phone' => $faker->phoneNumber,
+                'address' => $faker->address,
+            ];
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $users
+        ]);
+    });
 
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         return $request->user();

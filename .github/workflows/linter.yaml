@@ -1,4 +1,4 @@
-name: Laravel Linter & Test
+name: Linter
 
 on:
   push:
