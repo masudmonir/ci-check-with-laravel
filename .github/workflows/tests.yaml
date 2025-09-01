@@ -1,13 +1,20 @@
-name: Laravel Tests
+name: Tests
+
+# on:
+#   push:
+#     branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_run:
+    workflows: ["Linter"]   # লিন্টার শেষ হলে রান করবে
+    types:
+      - completed
 
 jobs:
   laravel-tests:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     services:
