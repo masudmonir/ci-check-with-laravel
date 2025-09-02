@@ -28,6 +28,8 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -p 1975 onik@91.99.49.56 "
             cd /var/www/testrestaurant.shop/public_html/ci-check-with-laravel && \
+            git reset --hard HEAD && \
+            git clean -fd && \
             git pull origin main && \
             composer install --no-interaction --prefer-dist --optimize-autoloader && \
             php artisan migrate --force && \
