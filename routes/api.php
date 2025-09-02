@@ -20,7 +20,7 @@ use Faker\Factory as Faker;
 
         $users = [];
 
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 15; $i++) {
             $users[] = [
                 'id' => $i + 1,
                 'name' => $faker->name,
