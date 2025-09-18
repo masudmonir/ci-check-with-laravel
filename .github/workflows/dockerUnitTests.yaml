@@ -1,0 +1,51 @@
+name: LaravelDockerUnitTests
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  docker-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build and start containers
+        run: docker compose -f docker-compose.ci.yml up -d --build
+
+      - name: Wait for MySQL
+        run: |
+          until docker compose -f docker-compose.ci.yml exec mysql mysqladmin ping -h "127.0.0.1" --silent; do
+            sleep 2
+          done
+
+      - name: Check files inside laravel container
+        run: docker compose -f docker-compose.ci.yml exec laravel ls -la
+
+      - name: Generate app key
+        run: docker compose -f docker-compose.ci.yml exec laravel php artisan key:generate
+
+      - name: Run migrations
+        run: docker compose -f docker-compose.ci.yml exec laravel php artisan migrate --force
+
+      - name: Run tests
+        run: docker compose -f docker-compose.ci.yml exec laravel php artisan test
+
+      - name: Run tests with coverage
+        run: docker compose -f docker-compose.ci.yml exec -e XDEBUG_MODE=coverage laravel php artisan test --coverage-clover=coverage.xml
+
+      - name: Copy coverage.xml from container
+        run: docker cp laravel_ci:/var/www/html/coverage.xml ./coverage.xml
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+
+      - name: Stop containers
+        run: docker compose -f docker-compose.ci.yml down -v
