@@ -1,33 +1,44 @@
-FROM php:8.3-cli
+# FROM php:8.3-cli
+# FROM php:8.3-apache
+# # Enable mod_rewrite
+# RUN a2enmod rewrite
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    git curl zip unzip libonig-dev libzip-dev libxml2-dev \
-    libpng-dev libjpeg-dev libfreetype6-dev \
-    libcurl4-openssl-dev pkg-config \
-    && docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl bcmath gd opcache
+# # Install system dependencies
+# RUN apt-get update && apt-get install -y \
+#     git curl zip unzip libonig-dev libzip-dev libxml2-dev \
+#     libpng-dev libjpeg-dev libfreetype6-dev \
+#     libcurl4-openssl-dev pkg-config \
+#     && docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl bcmath gd opcache
 
-RUN pecl install xdebug \
-    && docker-php-ext-enable xdebug
+# RUN pecl install xdebug \
+#     && docker-php-ext-enable xdebug
 
-# Set working directory
-WORKDIR /var/www/html
+# # Set working directory
+# WORKDIR /var/www/html
 
-# Install Composer (first!)
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# # Install Composer (first!)
+# COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy composer files first (for caching)
-COPY composer.json composer.lock ./
+# # Copy composer files first (for caching)
+# COPY composer.json composer.lock ./
 
-# Install PHP dependencies
-RUN composer install --prefer-dist --no-interaction --no-progress --no-scripts
+# # Install PHP dependencies
+# RUN composer install --prefer-dist --no-interaction --no-progress --no-scripts
 
-# Copy the rest of the app
-COPY . .
+# # Copy the rest of the app
+# COPY . .
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html
+# # Set document root to public/
+# ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+
+# # Fix Apache config for public folder
+# RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/000-default.conf
+
+# # Set permissions
+# # RUN chown -R www-data:www-data /var/www/html \
+# #     && chmod -R 755 /var/www/html
+# RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+#     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 
 
@@ -66,3 +77,43 @@ RUN chown -R www-data:www-data /var/www/html \
 
 # # Enable Laravel .htaccess
 # COPY ./000-default.conf /etc/apache2/sites-available/000-default.conf
+
+
+
+# Stage 1: Base
+FROM php:8.3-apache AS base
+RUN a2enmod rewrite \
+ && apt-get update && apt-get install -y \
+    git curl zip unzip libonig-dev libzip-dev libxml2-dev \
+    libpng-dev libjpeg-dev libfreetype6-dev \
+    libcurl4-openssl-dev pkg-config \
+ && docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl bcmath gd opcache
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+WORKDIR /var/www/html
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/000-default.conf
+
+# Stage 2: Dev
+FROM base AS dev
+RUN pecl install xdebug && docker-php-ext-enable xdebug
+COPY . .
+RUN composer install --prefer-dist --no-interaction --no-progress
+RUN chown -R www-data:www-data storage bootstrap/cache \
+ && chmod -R 775 storage bootstrap/cache
+
+# Stage 2: Dev
+FROM base AS test
+RUN pecl install xdebug && docker-php-ext-enable xdebug
+COPY . .
+RUN composer install --prefer-dist --no-interaction --no-progress
+RUN chown -R www-data:www-data storage bootstrap/cache \
+ && chmod -R 775 storage bootstrap/cache
+
+# Stage 3: Prod
+FROM base AS prod
+COPY . .
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
+RUN php artisan config:cache && php artisan route:cache && php artisan view:cache
+RUN chown -R www-data:www-data storage bootstrap/cache \
+ && chmod -R 775 storage bootstrap/cache

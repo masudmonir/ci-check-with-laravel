@@ -6,7 +6,8 @@ services:
     restart: always
 
     build:
-      context: /var/www/php-83/ci-check-with-laravel
+      context: .
+      target: dev
     volumes:
       - /var/www/php-83/ci-check-with-laravel:/var/www/html
     ports:

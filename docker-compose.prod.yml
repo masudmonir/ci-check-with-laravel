@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # Reverse Proxy (Nginx)
+  nginx-proxy:
+    image: jwilder/nginx-proxy:alpine
+    container_name: nginx_proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /etc/ssl/testrestaurant/testrestaurant.crt:/etc/nginx/certs/testrestaurant.shop.crt:ro
+      - /etc/ssl/testrestaurant/testrestaurant.key:/etc/nginx/certs/testrestaurant.shop.key:ro
+      - ./vhost.d:/etc/nginx/vhost.d
+      - ./html:/usr/share/nginx/html
+
+  # Laravel Application
+  laravel:
+    build:
+      context: .
+      target: prod   # multi-stage Dockerfile এর prod stage ব্যবহার হবে
+    container_name: laravel_app
+    restart: always
+    environment:
+      APP_ENV: production
+      DB_HOST: mysql
+      DB_DATABASE: lara_ci_cd_db
+      DB_USERNAME: root
+      DB_PASSWORD: password
+      VIRTUAL_HOST: testrestaurant.shop,www.testrestaurant.shop
+      # SSL host declare করতে হবে
+      CERT_NAME: testrestaurant.shop
+    volumes:
+      - ./storage:/var/www/html/storage
+      - ./bootstrap/cache:/var/www/html/bootstrap/cache
+    depends_on:
+      - mysql
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_prod
+    restart: always
+    environment:
+      MYSQL_DATABASE: lara_ci_cd_db
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
