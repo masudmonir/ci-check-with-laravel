@@ -40,7 +40,7 @@ jobs:
           port: ${{ secrets.RES_SERVER_PORT }}
           key: ${{ secrets.RES_VPS_SSH_KEY }}
           script: |
-            cd /var/www/testrestaurant.shop/public_html
+            cd /var/www/testrestaurant.shop/
             docker pull ${{ secrets.IN_DOCKER_USERNAME }}/cicd-with-docker-app:latest
             docker compose -f docker-compose.prod.yml down
             docker compose -f docker-compose.prod.yml up -d
