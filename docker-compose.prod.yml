@@ -54,7 +54,7 @@
 
 
 
-version: "3.8"
+# version: "3.8"
 
 services:
   laravel:
@@ -83,7 +83,7 @@ services:
 
   mysql:
     image: mysql:8.0
-    container_name: mysql_prod
+    container_name: cicd_test_mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: Admin@123
