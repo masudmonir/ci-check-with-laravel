@@ -113,7 +113,7 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
 # Stage 3: Prod
 FROM base AS prod
 COPY . .
-COPY .env.prod /var/www/html/.env
+# COPY .env.prod /var/www/html/.env
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
 RUN php artisan config:cache && php artisan route:cache && php artisan view:cache
 RUN chown -R www-data:www-data storage bootstrap/cache \
