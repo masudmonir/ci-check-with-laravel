@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Faker\Factory as Faker;
+use App\Http\Controllers\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,3 +42,5 @@ use Faker\Factory as Faker;
     });
     Route::get('/users', [App\Http\Controllers\UserController::class, 'index']);
     Route::post('/users', [App\Http\Controllers\UserController::class, 'store']);
+
+    Route::apiResource('products', ProductController::class);

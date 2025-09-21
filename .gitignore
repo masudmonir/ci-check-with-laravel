@@ -9,7 +9,8 @@
 /tests_old
 .env
 .env.backup
-.env.production
+.env.prod
+.env.example
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
