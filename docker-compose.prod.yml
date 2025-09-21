@@ -80,6 +80,13 @@ services:
       - ./bootstrap/cache:/var/www/html/bootstrap/cache
     depends_on:
       - mysql
+    command: >
+      sh -c "until mysqladmin ping -h mysql --silent; do
+              echo 'waiting for mysql...';
+              sleep 3;
+            done &&
+            php artisan migrate --force &&
+            apache2-foreground"
 
   mysql:
     image: mysql:8.0
