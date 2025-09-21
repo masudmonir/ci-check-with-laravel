@@ -175,7 +175,7 @@ COPY --from=node_builder /app/public/build ./public/build
 # COPY .env.prod /var/www/html/.env
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
-RUN php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan migrate --force
+RUN php artisan config:cache && php artisan route:cache && php artisan view:cache
 RUN composer update
 RUN chown -R www-data:www-data storage bootstrap/cache \
  && chmod -R 777 storage bootstrap/cache
