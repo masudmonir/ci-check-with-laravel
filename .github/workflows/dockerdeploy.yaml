@@ -43,4 +43,4 @@ jobs:
             cd /var/www/testrestaurant.shop/
             docker pull ${{ secrets.IN_DOCKER_USERNAME }}/cicd-with-docker-app:latest
             docker compose -f docker-compose.prod.yml down
-            docker compose -f docker-compose.prod.yml up -d
+            docker compose -f docker-compose.prod.yml up -d --build
