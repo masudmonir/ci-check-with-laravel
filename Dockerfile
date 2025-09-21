@@ -167,7 +167,7 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
 # Stage 5: Prod
 FROM base AS prod
 COPY . .
-
+COPY .env.prod /var/www/html/.env
 # Copy built Vite assets from node_builder
 COPY --from=node_builder /app/public/build ./public/build
 

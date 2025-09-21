@@ -44,4 +44,5 @@ jobs:
             docker pull ${{ secrets.IN_DOCKER_USERNAME }}/cicd-with-docker-app:latest
             docker compose -f docker-compose.prod.yml down
             docker compose -f docker-compose.prod.yml up -d
+            sleep 15
             docker compose -f docker-compose.prod.yml exec -T cicd_test_app php artisan migrate --force
